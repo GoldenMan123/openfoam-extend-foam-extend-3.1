@@ -40,7 +40,7 @@ autoPtr<radiationModel> radiationModel::New
     const volScalarField& T
 )
 {
-    word radiationModelTypeName;
+    word modelType;
 
     // Note: no need to register/keep radiationProperties since models read
     // it themselves.
@@ -59,20 +59,20 @@ autoPtr<radiationModel> radiationModel::New
         );
 
         radiationPropertiesDict.lookup("radiationModel")
-            >> radiationModelTypeName;
+            >> modelType;
     }
 
-    Info<< "Selecting radiationModel " << radiationModelTypeName << endl;
+    Info<< "Selecting radiationModel " << modelType << endl;
 
-    dictionaryConstructorTable::iterator cstrIter =
-        dictionaryConstructorTablePtr_->find(radiationModelTypeName);
+    TConstructorTable::iterator cstrIter =
+        TConstructorTablePtr_->find(modelType);
 
-    if (cstrIter == dictionaryConstructorTablePtr_->end())
+    if (cstrIter == TConstructorTablePtr_->end())
     {
         FatalErrorIn
         (
             "radiationModel::New(const volScalarField&)"
-        )   << "Unknown radiationModel type " << radiationModelTypeName
+        )   << "Unknown radiationModel type " << modelType
             << nl << nl
             << "Valid radiationModel types are:" << nl
             << dictionaryConstructorTablePtr_->sortedToc()
@@ -80,6 +80,35 @@ autoPtr<radiationModel> radiationModel::New
     }
 
     return autoPtr<radiationModel>(cstrIter()(T));
+}
+
+
+autoPtr<radiationModel> radiationModel::New
+(
+    const dictionary& dict,
+    const volScalarField& T
+)
+{
+    const word modelType(dict.lookup("radiationModel"));
+
+    Info<< "Selecting radiationModel " << modelType << endl;
+
+    dictionaryConstructorTable::iterator cstrIter =
+        dictionaryConstructorTablePtr_->find(modelType);
+
+    if (cstrIter == dictionaryConstructorTablePtr_->end())
+    {
+        FatalErrorIn
+        (
+            "radiationModel::New(const dictionary&, const volScalarField&)"
+        )   << "Unknown radiationModel type "
+            << modelType << nl << nl
+            << "Valid radiationModel types are:" << nl
+            << dictionaryConstructorTablePtr_->sortedToc()
+            << exit(FatalError);
+    }
+
+    return autoPtr<radiationModel>(cstrIter()(dict, T));
 }
 
 
