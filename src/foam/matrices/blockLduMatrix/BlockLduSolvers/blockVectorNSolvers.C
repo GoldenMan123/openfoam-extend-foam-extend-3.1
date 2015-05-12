@@ -42,6 +42,7 @@ License
 #include "BlockCGSolver.H"
 #include "BlockGaussSeidelSolver.H"
 #include "BlockGMRESSolver.H"
+#include "BlockIDRSolver.H"
 
 // KRJ: 2012-12-15: Multigrid solver
 #include "blockAmgSolvers.H"
@@ -131,6 +132,11 @@ typedef BlockGMRESSolver<type > block##Type##GMRESSolver;                     \
 makeBlockSolverTypeName(block##Type##GMRESSolver);                            \
 addSolverToBlockMatrix(Type, block##Type##GMRESSolver, symMatrix);            \
 addSolverToBlockMatrix(Type, block##Type##GMRESSolver, asymMatrix);           \
+                                                                              \
+typedef BlockIDRSolver<type > block##Type##IDRSolver;               \
+makeBlockSolverTypeName(block##Type##IDRSolver);                         \
+addSolverToBlockMatrix(Type, block##Type##IDRSolver, symMatrix);         \
+addSolverToBlockMatrix(Type, block##Type##IDRSolver, asymMatrix);        \
                                                                               \
 typedef BlockMatrixCoarsening<type > block##Type##MatrixCoarsening;                         \
 defineNamedTemplateTypeNameAndDebug(block##Type##MatrixCoarsening, 0);               \

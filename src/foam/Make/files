@@ -694,5 +694,6 @@ matrices/blockLduMatrix/BlockLduSolvers/BlockBiCGStab/blockBiCGStabSolvers.C
 matrices/blockLduMatrix/BlockLduSolvers/BlockGMRES/blockGMRESSolvers.C
 matrices/blockLduMatrix/BlockLduSolvers/BlockAmgSolver/blockAmgSolvers.C
 matrices/blockLduMatrix/BlockLduSolvers/Segregated/segregatedSolvers.C
+matrices/blockLduMatrix/BlockLduSolvers/BlockIDRSolver/blockIDRSolvers.C
 
 LIB = $(FOAM_LIBBIN)/libfoam

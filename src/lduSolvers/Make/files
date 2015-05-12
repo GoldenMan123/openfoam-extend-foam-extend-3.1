@@ -21,6 +21,8 @@ $(lduSolver)/fpeAmgSolver/fpeAmgSolver.C
 $(lduSolver)/mpeAmgSolver/mpeAmgSolver.C
 $(lduSolver)/rreAmgSolver/rreAmgSolver.C
 $(lduSolver)/deflationSolver/deflationSolver.C
+$(lduSolver)/idrSolver/idrSolver.C
+$(lduSolver)/idrSolver/idrPgen.C
 
 amg = amg
 $(amg)/amgCycle.C
