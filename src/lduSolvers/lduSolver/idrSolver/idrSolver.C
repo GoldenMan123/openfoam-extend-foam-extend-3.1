@@ -88,13 +88,13 @@ Foam::idrSolver::idrSolver
 Foam::scalar Foam::idrSolver::vscal(const scalar *a, const scalar *b, label size) const
 {
     typedef scalar vst __attribute__((vector_size(VECTOR_SIZE * sizeof(scalar))));
-    register vst tmp = {0};
-    register const vst * __restrict__ a_ = reinterpret_cast<const vst *>(a);
-    register const vst * __restrict__ b_ = reinterpret_cast<const vst *>(b);
-    for (register label i = 0; i < size / VECTOR_SIZE; ++i) {
+    vst tmp = {0};
+    const vst * __restrict__ a_ = reinterpret_cast<const vst *>(a);
+    const vst * __restrict__ b_ = reinterpret_cast<const vst *>(b);
+    for (label i = 0; i < size / VECTOR_SIZE; ++i) {
         tmp += a_[i] * b_[i];
     }
-    register scalar res = 0.0;
+    scalar res = 0.0;
     for (label i = 0; i < VECTOR_SIZE; ++i) {
         res += tmp[i];
     }
@@ -105,24 +105,24 @@ Foam::scalar Foam::idrSolver::scal(const scalar *a, const scalar *b, label size)
 {
     unsigned long a_ = reinterpret_cast<unsigned long>(a) & (VECTOR_SIZE * sizeof(scalar) - 1) / sizeof(scalar);
     unsigned long b_ = reinterpret_cast<unsigned long>(b) & (VECTOR_SIZE * sizeof(scalar) - 1) / sizeof(scalar);
-    register scalar tmp = 0;
+    scalar tmp = 0;
     if (a_ == b_ && size >= 4 * VECTOR_SIZE) {
-        register label sh = static_cast<label>(VECTOR_SIZE - a_);
+        label sh = static_cast<label>(VECTOR_SIZE - a_);
         if (a_) {
-            for (register label i = 0; i < sh; ++i) {
+            for (label i = 0; i < sh; ++i) {
                 tmp += a[i] * b[i];
             }
             size -= sh;
         } else {
             sh = 0;
         }
-        for (register label i = size & ~(VECTOR_SIZE - 1); i < size; ++i) {
+        for (label i = size & ~(VECTOR_SIZE - 1); i < size; ++i) {
             tmp += (a + sh)[i] * (b + sh)[i];
         }
         tmp += vscal(a + sh, b + sh, size & ~(VECTOR_SIZE - 1));
         return tmp;
     }
-    for (register label i = 0; i < size; ++i) {
+    for (label i = 0; i < size; ++i) {
         tmp += a[i] * b[i];
     }
     return tmp;
@@ -146,34 +146,34 @@ void Foam::idrSolver::mul(scalarField &res, const scalarFieldField &a, const sca
 void Foam::idrSolver::tmul(scalarField &res, const scalarFieldField &a, const scalarField &b,
     label x1, label x2, label y1, label y2) const
 {
-    register label nI = x2 - x1 + 1;
-    register const scalar * __restrict__ bR = &b[0];
-    register scalar * __restrict__ resI_ = &res[0];
-    register scalar * __restrict__ resI = static_cast<scalar *>(__builtin_assume_aligned(resI_, 16));
-    register label y1I = y1;
-    register label x1I = x1;
+    label nI = x2 - x1 + 1;
+    const scalar * __restrict__ bR = &b[0];
+    scalar * __restrict__ resI_ = &res[0];
+    scalar * __restrict__ resI = static_cast<scalar *>(__builtin_assume_aligned(resI_, 16));
+    label y1I = y1;
+    label x1I = x1;
 
     static const label L1_CACHED_PART = 16 * 1024 / sizeof(scalar);
     label parts = nI / L1_CACHED_PART + ((nI % L1_CACHED_PART) ? 1 : 0);
 
-    for (register label z = 0; z < parts; ++z) {
-        register label part_size = L1_CACHED_PART;
+    for (label z = 0; z < parts; ++z) {
+        label part_size = L1_CACHED_PART;
         if ((z == parts - 1) && (nI % part_size)) {
             part_size = nI % part_size;
         }
         {
-            register scalar bI = bR[0];
-            register const scalar * __restrict__ aI_ = &a[y1I][0];
-            register const scalar * __restrict__ aI = static_cast<scalar *>(__builtin_assume_aligned(aI_, 16));
-            for (register label i = 0; i < part_size; ++i) {
+            scalar bI = bR[0];
+            const scalar * __restrict__ aI_ = &a[y1I][0];
+            const scalar * __restrict__ aI = static_cast<scalar *>(__builtin_assume_aligned(aI_, 16));
+            for (label i = 0; i < part_size; ++i) {
                 resI[i + z * L1_CACHED_PART] = aI[i + x1I + z * L1_CACHED_PART] * bI;
             }
         }
         for (label j = 1; j < y2 - y1 + 1; ++j) {
-            register scalar bI = bR[j];
-            register const scalar * __restrict__ aI_ = &a[j + y1I][0];
-            register const scalar * __restrict__ aI = static_cast<scalar *>(__builtin_assume_aligned(aI_, 16));
-            for (register label i = 0; i < part_size; ++i) {
+            scalar bI = bR[j];
+            const scalar * __restrict__ aI_ = &a[j + y1I][0];
+            const scalar * __restrict__ aI = static_cast<scalar *>(__builtin_assume_aligned(aI_, 16));
+            for (label i = 0; i < part_size; ++i) {
                 resI[i + z * L1_CACHED_PART] += aI[i + x1I + z * L1_CACHED_PART] * bI;
             }
         }
@@ -202,7 +202,8 @@ Foam::scalarField Foam::idrSolver::subvector(const scalarField &x, label s, labe
     return res;
 }
 
-void Foam::idrSolver::relax(scalarField &dst, const scalarField &src, scalar coeff) const {
+void Foam::idrSolver::relax(scalarField &dst, const scalarField &src, scalar coeff) const 
+{
     scalar c = coeff;
     label nI = src.size();
     scalar * __restrict__ dstI_ = &dst[0];
@@ -211,6 +212,27 @@ void Foam::idrSolver::relax(scalarField &dst, const scalarField &src, scalar coe
     const scalar * __restrict__ srcI = static_cast<scalar *>(__builtin_assume_aligned(srcI_, 16));
     for (label i = 0; i < nI; ++i) {
         dstI[i] -= srcI[i] * c;
+    }
+}
+
+void Foam::idrSolver::generate(scalarFieldField &mtx, const scalarField &r, const scalarField &seed) const
+{
+    label n = mtx.size();
+    label m = mtx[0].size();
+    mtx[0] = r;
+    for (label j = 0; j < m; ++j) {
+        const unsigned long long *seed_ptr = reinterpret_cast<const unsigned long long *>(&seed[j]);
+        srand(*seed_ptr);
+        for (label i = 1; i < n; ++i) {
+            mtx[i][j] = (2.0 * (1.0 + rand()) / (RAND_MAX + 1.0) - 1.0);
+        }
+    }
+    for (label i = 1; i < n; ++i) {
+        double scal;
+        for (label k = 0; k < i; ++k) {
+            scal = gSumProd(mtx[i], mtx[k]) / gSumProd(mtx[k], mtx[k]);
+            mtx[i] -= scal * mtx[k];
+        }
     }
 }
 
@@ -247,8 +269,7 @@ Foam::lduSolverPerformance Foam::idrSolver::solve
             P.set(i, new scalarField(x.size()));
         }
 
-        idrPgen pgen;
-        pgen.generate(P, rA);
+        generate(P, rA, b);
 
         // Initialize G(n, s) = 0, U(n, s) = 0 and M(s, s) = I
 
