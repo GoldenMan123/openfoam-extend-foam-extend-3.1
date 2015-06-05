@@ -62,65 +62,11 @@ Foam::BlockIDRSolver<Type>::BlockIDRSolver
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-#define VECTOR_SIZE 2
-
-template<class Type>
-Foam::scalar Foam::BlockIDRSolver<Type>::vscal(const scalar *a, const scalar *b, label size) const
-{
-    typedef scalar vst __attribute__((vector_size(VECTOR_SIZE * sizeof(scalar))));
-    vst tmp = {0};
-    const vst * __restrict__ a_ = reinterpret_cast<const vst *>(a);
-    const vst * __restrict__ b_ = reinterpret_cast<const vst *>(b);
-    for (label i = 0; i < size / VECTOR_SIZE; ++i) {
-        tmp += a_[i] * b_[i];
-    }
-    scalar res = 0.0;
-    for (label i = 0; i < VECTOR_SIZE; ++i) {
-        res += tmp[i];
-    }
-    return res;
-}
-
-template<class Type>
-Foam::scalar Foam::BlockIDRSolver<Type>::scal(const scalar *a, const scalar *b, label size) const
-{
-    unsigned long a_ = reinterpret_cast<unsigned long>(a) & (VECTOR_SIZE * sizeof(scalar) - 1) / sizeof(scalar);
-    unsigned long b_ = reinterpret_cast<unsigned long>(b) & (VECTOR_SIZE * sizeof(scalar) - 1) / sizeof(scalar);
-    scalar tmp = 0;
-    if (a_ == b_ && size >= 4 * VECTOR_SIZE) {
-        label sh = static_cast<label>(VECTOR_SIZE - a_);
-        if (a_) {
-            for (label i = 0; i < sh; ++i) {
-                tmp += a[i] * b[i];
-            }
-            size -= sh;
-        } else {
-            sh = 0;
-        }
-        for (label i = size & ~(VECTOR_SIZE - 1); i < size; ++i) {
-            tmp += (a + sh)[i] * (b + sh)[i];
-        }
-        tmp += vscal(a + sh, b + sh, size & ~(VECTOR_SIZE - 1));
-        return tmp;
-    }
-    for (label i = 0; i < size; ++i) {
-        tmp += a[i] * b[i];
-    }
-    return tmp;
-}
-
-template<class Type>
-Foam::scalar Foam::BlockIDRSolver<Type>::gscal(const scalarField &a, const scalarField &b) const {
-    scalar r = scal(&a[0], &b[0], a.size());
-    reduce(r, sumOp<scalar>());
-    return r;
-}
-
 template<class Type>
 void Foam::BlockIDRSolver<Type>::mul(scalarField &res, const scalarFieldField &a, const scalarField &b) const
 {
     for (label i = 0; i < a.size(); ++i) {
-        res[i] = scal(&a[i][0], &b[0], a[0].size());
+        res[i] = vectorSumProd(&a[i][0], &b[0], a[0].size());
     }
 }
 
@@ -129,7 +75,7 @@ void Foam::BlockIDRSolver<Type>::mul(scalarField &res, const scalarFieldField &a
     label x1, label x2, label y1, label y2) const
 {
     for (label i = 0; i < x2 - x1 + 1; ++i) {
-        res[i] = scal(&a[i + x1][0] + y1, &b[0], y2 - y1 + 1);
+        res[i] = vectorSumProd(&a[i + x1][0] + y1, &b[0], y2 - y1 + 1);
     }
 }
 
@@ -208,8 +154,6 @@ void Foam::BlockIDRSolver<Type>::relax(scalarField &dst, const scalarField &src,
         dstI[i] -= srcI[i] * c;
     }
 }
-
-#define gSumProd gscal
 
 template<class Type>
 void Foam::BlockIDRSolver<Type>::generate(scalarFieldField &mtx, const scalarField &r, const scalarField &seed) const

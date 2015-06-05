@@ -176,6 +176,9 @@ TMP_UNARY_FUNCTION(Type, sum)
 template<class Type>
 scalar sumProd(const UList<Type>& f1, const UList<Type>& f2);
 
+template<>
+scalar sumProd<scalar>(const UList<scalar>& f1, const UList<scalar>& f2);
+
 template<class Type>
 Type sumCmptProd(const UList<Type>& f1, const UList<Type>& f2);
 

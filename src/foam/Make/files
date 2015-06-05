@@ -531,6 +531,7 @@ $(Fields)/VectorNFields/SphericalTensorNFields.C
 $(Fields)/VectorNFields/DiagTensorNFields.C
 $(Fields)/VectorNFields/TensorNFields.C
 $(Fields)/VectorNFields/expandContract/ExpandTensorNField.C
+$(Fields)/Field/FieldVectorFunctions.C
 
 $(Fields)/labelField/labelIOField.C
 $(Fields)/scalarField/scalarIOField.C

@@ -41,6 +41,7 @@ SourceFiles
 #include "lduMatrix.H"
 #include "Field.H"
 #include "FieldFields.H"
+#include "FieldVectorFunctions.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -75,8 +76,6 @@ class idrSolver
         //- Disallow default bitwise assignment
         void operator=(const idrSolver&);
 
-        scalar scal(const scalar *a, const scalar *b, label size) const;
-        scalar vscal(const scalar *a, const scalar *b, label size) const;
         void mul(scalarField &res, const scalarFieldField &a, const scalarField &b) const;
         void mul(scalarField &res, const scalarFieldField &a, const scalarField &b, label x1, label x2,
             label y1, label y2) const;
@@ -84,7 +83,7 @@ class idrSolver
             label y1, label y2) const;
         void relax(scalarField &dst, const scalarField &src, scalar coeff) const;
         void gauss(scalarField &c, const scalarFieldField &a, const scalarField &b, label x1, label x2) const;
-            scalarField subvector(const scalarField &x, label s, label f) const;
+        scalarField subvector(const scalarField &x, label s, label f) const;
         void generate(scalarFieldField &mtx, const scalarField &r, const scalarField &seed) const;
 
 

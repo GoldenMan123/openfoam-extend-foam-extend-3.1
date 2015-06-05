@@ -41,6 +41,7 @@ SourceFiles
 #include "blockLduSolvers.H"
 #include "BlockIterativeSolver.H"
 #include "blockLduPrecons.H"
+#include "FieldVectorFunctions.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -76,9 +77,6 @@ class BlockIDRSolver
         //- Disallow default bitwise assignment
         void operator=(const BlockIDRSolver<Type>&);
 
-        scalar scal(const scalar *a, const scalar *b, label size) const;
-        scalar gscal(const scalarField &a, const scalarField &b) const;
-        scalar vscal(const scalar *a, const scalar *b, label size) const;
         void mul(scalarField &res, const scalarFieldField &a, const scalarField &b) const;
         void mul(scalarField &res, const scalarFieldField &a, const scalarField &b, label x1, label x2,
             label y1, label y2) const;
