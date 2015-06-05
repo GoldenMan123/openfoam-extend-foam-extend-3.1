@@ -23,7 +23,7 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "FieldVectorFunctions.H"
+#include "FieldFunctions.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -39,8 +39,8 @@ scalar vectorSumProdImpl(const scalar *a, const scalar *b, label size)
 {
     typedef scalar vst __attribute__((vector_size(VECTOR_SIZE * sizeof(scalar))));
     vst tmp = {0};
-    const vst * __restrict__ a_ = reinterpret_cast<const vst *>(a);
-    const vst * __restrict__ b_ = reinterpret_cast<const vst *>(b);
+    const vst *a_ = reinterpret_cast<const vst *>(a);
+    const vst *b_ = reinterpret_cast<const vst *>(b);
     for (label i = 0; i < size / VECTOR_SIZE; ++i) {
         tmp += a_[i] * b_[i];
     }
