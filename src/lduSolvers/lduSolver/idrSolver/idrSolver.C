@@ -86,15 +86,15 @@ Foam::idrSolver::idrSolver
 void Foam::idrSolver::mul(scalarField &res, const scalarFieldField &a, const scalarField &b) const
 {
     for (label i = 0; i < a.size(); ++i) {
-        res[i] = vectorSumProd(&a[i][0], &b[0], a[0].size());
+        res[i] = sumProd(a[i], b);
     }
 }
 
 void Foam::idrSolver::mul(scalarField &res, const scalarFieldField &a, const scalarField &b,
     label x1, label x2, label y1, label y2) const
 {
-    for (label i = 0; i < x2 - x1 + 1; ++i) {
-        res[i] = vectorSumProd(&a[i + x1][0] + y1, &b[0], y2 - y1 + 1);
+    for (label i = 0; i < x2 - x1 + 1; ++i) { 
+        res[i] = sumProd(SubField<scalar>(a[i + x1], y2 - y1  + 1, y1), SubField<scalar>(b, y2 - y1 + 1, y1));
     }
 }
 

@@ -40,8 +40,8 @@ SourceFiles
 
 #include "lduMatrix.H"
 #include "Field.H"
+#include "SubField.H"
 #include "FieldFields.H"
-#include "FieldVectorFunctions.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
