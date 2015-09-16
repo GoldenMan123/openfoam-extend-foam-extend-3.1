@@ -86,7 +86,7 @@ class idrSolver
         void relax(scalarField &dst, const scalarField &src, scalar coeff) const;
         void gauss(scalarField &c, const scalarFieldField &a, const scalarField &b, label x1, label x2) const;
         scalarField subvector(const scalarField &x, label s, label f) const;
-        void generate(scalarFieldField &mtx, const scalarField &r, const scalarField &seed) const;
+        void generate(scalarFieldField &mtx, const scalarField &r, const Field<label> &seed) const;
 
 
 public:

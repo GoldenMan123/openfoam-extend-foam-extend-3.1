@@ -170,14 +170,13 @@ void Foam::idrSolver::relax(scalarField &dst, const scalarField &src, scalar coe
     }
 }
 
-void Foam::idrSolver::generate(scalarFieldField &mtx, const scalarField &r, const scalarField &seed) const
+void Foam::idrSolver::generate(scalarFieldField &mtx, const scalarField &r, const Field<label> &seed) const
 {
     label n = mtx.size();
     label m = mtx[0].size();
     mtx[0] = r;
     for (label j = 0; j < m; ++j) {
-        const unsigned long long *seed_ptr = reinterpret_cast<const unsigned long long *>(&seed[j]);
-        Random rng(*seed_ptr);
+        Random rng(seed[j]);
         for (label i = 1; i < n; ++i) {
             mtx[i][j] = (2.0 * rng.scalar01() - 1.0);
         }
@@ -224,7 +223,7 @@ Foam::lduSolverPerformance Foam::idrSolver::solve
             P.set(i, new scalarField(x.size()));
         }
 
-        scalarField seed(b.size());
+        Field<label> seed(b.size());
         globalIndex gi(b.size());
         forAll(b, i) {
             seed[i] = gi.toGlobal(i) + 1;
