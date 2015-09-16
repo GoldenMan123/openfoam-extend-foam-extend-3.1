@@ -43,6 +43,7 @@ SourceFiles
 #include "blockLduPrecons.H"
 #include "SubField.H"
 #include "Random.H"
+#include "globalIndex.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 

@@ -302,11 +302,9 @@ Foam::BlockIDRSolver<Type>::solve
         }
 
         scalarField seed(b.size());
-        Random rng(877117);
-        for (label i = 0; i < Pstream::myProcNo() + 1; ++i) {
-            forAll(b, i) {
-                seed[i] = rng.scalar01();
-            }
+        globalIndex gi(b.size());
+        forAll(b, i) {
+            seed[i] = gi.toGlobal(i) + 1;
         }
 
         generate(P, rA, seed);

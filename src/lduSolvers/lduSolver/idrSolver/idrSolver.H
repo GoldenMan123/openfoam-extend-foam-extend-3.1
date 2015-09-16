@@ -43,6 +43,7 @@ SourceFiles
 #include "SubField.H"
 #include "FieldFields.H"
 #include "Random.H"
+#include "globalIndex.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
