@@ -163,9 +163,9 @@ void Foam::BlockIDRSolver<Type>::generate(scalarFieldField &mtx, const scalarFie
     mtx[0] = r;
     for (label j = 0; j < m; ++j) {
         const unsigned long long *seed_ptr = reinterpret_cast<const unsigned long long *>(&seed[j]);
-        srand(*seed_ptr);
+        Random rng(*seed_ptr);
         for (label i = 1; i < n; ++i) {
-            mtx[i][j] = (2.0 * (1.0 + rand()) / (RAND_MAX + 1.0) - 1.0);
+            mtx[i][j] = (2.0 * rng.scalar01() - 1.0);
         }
     }
     for (label i = 1; i < n; ++i) {
@@ -301,7 +301,15 @@ Foam::BlockIDRSolver<Type>::solve
             P.set(i, new scalarField(x.size()));
         }
 
-        generate(P, rA, b);
+        scalarField seed(b.size());
+        Random rng(877117);
+        for (label i = 0; i < Pstream::myProcNo() + 1; ++i) {
+            forAll(b, i) {
+                seed[i] = rng.scalar01();
+            }
+        }
+
+        generate(P, rA, seed);
 
         // Initialize G(n, s) = 0, U(n, s) = 0 and M(s, s) = I
 

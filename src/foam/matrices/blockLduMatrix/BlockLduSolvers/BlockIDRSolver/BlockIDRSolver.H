@@ -42,6 +42,7 @@ SourceFiles
 #include "BlockIterativeSolver.H"
 #include "blockLduPrecons.H"
 #include "SubField.H"
+#include "Random.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 

@@ -42,6 +42,7 @@ SourceFiles
 #include "Field.H"
 #include "SubField.H"
 #include "FieldFields.H"
+#include "Random.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
